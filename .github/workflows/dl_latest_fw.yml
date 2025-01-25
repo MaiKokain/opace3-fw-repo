@@ -45,9 +45,14 @@ jobs:
                 #run: |  
                 #echo "REL_NAME=$(grep "version_name=" META-INF/com/android/metadata | sed 's/^[^=]*=//')" >> $GITHUB_ENV
                 #echo "############## $(echo ${{env.REL_NAME}}) ##############"
-            
-            - name: Publish Release
-              run: |
-                gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" $OTA_FILE
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                path: ${{ env.OTA_FILE }}
+                name: ${{ env.REL_NAME }}
+
+            # - name: Publish Release
+            #   run: |
+            #     gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" $OTA_FILE
                 
 
