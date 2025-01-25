@@ -33,7 +33,6 @@ jobs:
                 IFS="/" readarray -d "/" -t SPLITTED_FILE_NAME <<< "${{ github.event.inputs.fileurl }}"
                 echo "${SPLITTED_FILE_NAME[-1]}
                 echo "OTA_FILE=${SPLITTED_FILE_NAME[-1]}" >> $GITHUB_ENV
-                echo $OTA_FILE
                 echo "REL_NAME=debug" >> $GITHUB_ENV
               #- name: Get OTA metadata
               #run: |
