@@ -27,17 +27,25 @@ jobs:
             - name: Downloading OTA
               run: aria2c --user-agent='Dalvik/2.1.0 (Linux; U; Android 15; CPH2585 Build/AQ3A.241114.001)' "${{ github.event.inputs.fileurl }}"
             
-            - name: Get OTA metadata
-              run: |
-                IFS="/" readarray -d "/" -t SPLITTED_FILE_NAME <<< "${{ github.event.inputs.fileurl }}"
-                echo "OTA_FILE=${SPLITTED_FILE_NAME[-1]}" >> $GITHUB_ENV
-                echo $OTA_FILE
-                unzip $OTA_FILE META-INF/com/android/metadata
 
-            - name: Setting up Release name
-              run: |  
-                echo "REL_NAME=$(grep "version_name=" META-INF/com/android/metadata | sed 's/^[^=]*=//')" >> $GITHUB_ENV
-                echo "############## $(echo ${{env.REL_NAME}}) ##############"
+            - name: Set OTA File
+              run:  |
+                IFS="/" readarray -d "/" -t SPLITTED_FILE_NAME <<< "${{ github.event.inputs.fileurl }}"
+                echo "${SPLITTED_FILE_NAME[-1]}
+                echo "OTA_FILE=${SPLITTED_FILE_NAME[-1}" >> $GITHUB_ENV
+                echo $OTA_FILE
+                echo "REL_NAME=debug" >> $GITHUB_ENV
+              #- name: Get OTA metadata
+              #run: |
+              #  IFS="/" readarray -d "/" -t SPLITTED_FILE_NAME <<< "${{ github.event.inputs.fileurl }}"
+              #  echo "OTA_FILE=${SPLITTED_FILE_NAME[-1]}" >> $GITHUB_ENV
+              #  echo $OTA_FILE
+              #  unzip $OTA_FILE META-INF/com/android/metadata
+
+                #            - name: Setting up Release name
+                #run: |  
+                #echo "REL_NAME=$(grep "version_name=" META-INF/com/android/metadata | sed 's/^[^=]*=//')" >> $GITHUB_ENV
+                #echo "############## $(echo ${{env.REL_NAME}}) ##############"
             
             - name: Publish Release
               run: |
