@@ -1,0 +1,44 @@
+name: OP ACE3 OTA
+on:
+    workflow_dispatch:
+        inputs:
+            fileurl:
+                description: 'link of full OxygenOS/ColorOS file'
+                required: true
+                type: string
+
+env:
+    GH_TOKEN: ${{ github.token }}
+
+jobs:
+    dl-ota:
+        runs-on: ubuntu-latest
+        outputs:
+          id: ota-link
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@main
+            
+            - name: Set up Environment
+              run: |
+                sudo apt-get update && sudo apt upgrade -y
+                sudo apt-get install -y aria2
+            
+            - name: Downloading OTA
+              run: aria2c --user-agent='Dalvik/2.1.0 (Linux; U; Android 15; CPH2585 Build/AQ3A.241114.001)' "${{ github.event.inputs.fileurl }}"
+            
+            - name: Get OTA metadata
+              run: |
+                echo "OTA_FILE=$(ls -1 *.zip)" >> $GITHUB_ENV
+                unzip $OTA_FILE META-INF/com/android/metadata
+
+            - name: Setting up Release name
+              run: |  
+                echo "REL_NAME=$(grep "version_name=" ./metadata | sed 's/^[^=]*=//')" >> $GITHUB_ENV
+                echo "############## $(echo ${{env.REL_NAME}}) ##############"
+            
+            - name: Publish Release
+              run: |
+                gh release create $REL_NAME --title $(echo $REL_NAME) --notes "" $OTA_FILE
+                
+
